@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: campus-strong-app
+  profiles:
+    active: dev
