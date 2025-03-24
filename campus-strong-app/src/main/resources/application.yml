@@ -1,5 +1,5 @@
 spring:
   config:
-    name: xfg-frame-archetype-std-app
+    name: campus-strong-app-dev
   profiles:
     active: dev

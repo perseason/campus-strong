@@ -1,110 +1,37 @@
-# 命令执行 docker-compose up -d
-version: '3.9'
-# 安装开发环境
-# 配置中心nacos：http://127.0.0.1:8848/nacos - 【账号：nacos 密码：nacos】
-# 消息rocketmq：http://localhost:8080/#/ - 【账号：admin 密码：admin】
-# 任务调度xxl-job-admin：http://127.0.0.1:9090/xxl-job-admin/ - 【账号：admin 密码：123456】
-# 数据库mysql
-# 缓存redis
+version: "3.9"
 services:
-  # 注册中心 https://github.com/nacos-group/nacos-docker - 其他配置可参考(集群)
-  # http://127.0.0.1:8848/nacos 【账号：nacos 密码：nacos】
-  nacos:
-    image: nacos/nacos-server:v2.2.3-slim
-    container_name: nacos
-    restart: always
+  zlmediakit:
+    image: zlmediakit/zlmediakit:master
+    container_name: zlmediakit
     ports:
-      - "8848:8848"
-      - "9848:9848"
-    environment:
-      - PREFER_HOST_MODE=hostname
-      - MODE=standalone
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=mysql
-      - MYSQL_SERVICE_DB_NAME=nacos_config
-      - MYSQL_SERVICE_PORT=3306
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=lilpen@2002
-      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
-      - NACOS_AUTH_IDENTITY_KEY=2222
-      - NACOS_AUTH_IDENTITY_VALUE=2xxx
-      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
-    networks:
-      - my-network
-    depends_on:
-      mysql:
-        condition: service_healthy
-
-  # MySQL 增加健康检测，避免
-  mysql:
-    image: mysql:8.0.32
-    container_name: mysql
-    hostname: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      TZ: Asia/Shanghai
-      MYSQL_ROOT_PASSWORD: lilpen@2002
-      MYSQL_USER: phs
-      MYSQL_PASSWORD: lilpen@2002
-    networks:
-      - my-network
-    ports:
-      - "3306:3306"
+      - "1935:1935"       # RTMP
+      - "8080:80"         # HTTP
+      - "8443:443"        # HTTPS
+      - "8554:554"        # RTSP
+      - "10000:10000"     # RTP (TCP)
+      - "10000:10000/udp" # RTP (UDP)
+      - "8000:8000/udp"   # 其他 UDP 服务
+      - "9000:9000/udp"   # 其他 UDP 服务
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 15s
-    deploy:
-      resources:
-        limits:
-          cpus: '1.00'
-          memory: 512M
-
-  # Redis
-  redis:
-    image: redis:7.2.0
-    container_name: redis
-    restart: always
-    hostname: redis
-    ports:
-      - 6379:6379
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+      - ./zlmediakit/conf/config.ini:/opt/media/conf/config.ini  # 挂载自定义配置文件
     environment:
-      - REDIS_PASSWORD=lilpen@2002
+      TZ: "Asia/Shanghai"  # 设置时区
+    restart: "on-failure:3"  # 重启策略
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+#nginx配置
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
     networks:
-      - my-network
-    healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "lilpen@2002", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - webnet
 
-  # https://hub.docker.com/r/xuchengen/rocketmq
-  # 注意修改项；
-  # 01：data/rocketmq/conf/broker.conf 添加 brokerIP1=127.0.0.1
-  # 02：data/console/config/application.properties server.port=9009 - 如果8080端口被占用，可以修改或者添加映射端口
-  rocketmq:
-    image: livinphp/rocketmq:5.1.0
-    container_name: rocketmq
-    ports:
-      - 8080:8080
-      - 9876:9876
-      - 10909:10909
-      - 10911:10911
-      - 10912:10912
-    volumes:
-      - ./rocketmq/data:/home/app/data
-    environment:
-      TZ: "Asia/Shanghai"
-      NAMESRV_ADDR: "rocketmq:9876"
-
-networks:
-  my-network:
-    driver: bridge
+  networks:
+    webnet:

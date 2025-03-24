@@ -102,3 +102,8 @@ logging:
   level:
     root: info
   config: classpath:logback-spring.xml
+
+#ZLMediaKit配置
+zlmediakit:
+  host:
+
