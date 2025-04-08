@@ -102,8 +102,11 @@ logging:
   level:
     root: info
   config: classpath:logback-spring.xml
+# 雪花算法配置
+id:
+  generator:
+    config:
+      datacenterId: 1
+      machineId: 1
 
-#ZLMediaKit配置
-zlmediakit:
-  host:
 

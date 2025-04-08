@@ -37,7 +37,7 @@ public class AppException extends RuntimeException {
 
     @Override
     public String toString() {
-        return "pers.lilpen.x.api.types.exception.XApiException{" +
+        return "pers.lilpen.types.exception.ApiException{" +
                 "code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 '}';

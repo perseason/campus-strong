@@ -1,9 +1,6 @@
 package pers.lilpen.types.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -19,4 +16,26 @@ public class Response<T> implements Serializable {
     private String info;
     private T data;
 
+    @Getter
+    public enum ResponseCode {
+        SUCCESS("200", "success"),
+        DENIED("403", "access denied"),
+        ERROR("500", "server error");
+
+        private String code;
+        private String info;
+
+        ResponseCode(String code, String info) {
+            this.code = code;
+            this.info = info;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getInfo() {
+            return info;
+        }
+    }
 }

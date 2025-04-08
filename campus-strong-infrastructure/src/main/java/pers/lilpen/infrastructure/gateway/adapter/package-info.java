@@ -1,1 +1,0 @@
-package pers.lilpen.infrastructure.gateway.adapter;

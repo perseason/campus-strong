@@ -13,7 +13,7 @@ services:
       - "8000:8000/udp"   # 其他 UDP 服务
       - "9000:9000/udp"   # 其他 UDP 服务
     volumes:
-      - ./zlmediakit/conf/config.ini:/opt/media/conf/config.ini  # 挂载自定义配置文件
+      - ./zlmediakit/config/config.ini:/opt/media/conf/config.ini  # 挂载自定义配置文件
     environment:
       TZ: "Asia/Shanghai"  # 设置时区
     restart: "on-failure:3"  # 重启策略
@@ -22,16 +22,66 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-#nginx配置
-  nginx:
-    image: nginx:latest
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: lilpen@2002
+      MYSQL_DATABASE: nacos
+      MYSQL_USER: lilpen
+      MYSQL_PASSWORD: lilpen@2002
     ports:
-      - "80:80"
+      - "3306:3306"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/html:/usr/share/nginx/html:ro
-    networks:
-      - webnet
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
-  networks:
-    webnet:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
+    command: redis-server --appendonly yes
+    restart: "on-failure:3"
+    environment:
+      TZ: "Asia/Shanghai"  # 设置时区
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  nacos:
+    image: nacos/nacos-server:latest
+    container_name: nacos
+    environment:
+      PREFER_HOST_MODE: hostname
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: lilpen@2002
+      JVM_XMS: 512m
+      JVM_XMX: 512m
+      JVM_XMN: 256m
+      NACOS_DEBUG: y
+      TIME_ZONE: Asia/Shanghai
+    ports:
+      - "8848:8848"
+    volumes:
+      - ./nacos/logs:/home/nacos/logs
+      - ./nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties
+    depends_on:
+      - mysql
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local

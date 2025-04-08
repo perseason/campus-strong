@@ -49,6 +49,10 @@
             <groupId>pers.lilpen</groupId>
             <artifactId>campus-strong-types</artifactId>
         </dependency>
+        <dependency>
+            <groupId>pers.lilpen</groupId>
+            <artifactId>campus-strong-app</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
