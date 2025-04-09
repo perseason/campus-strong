@@ -1,4 +1,4 @@
-package pers.lilpen.domain.vedios.model.entity;
+package pers.lilpen.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
-    private Long userId;
-    private String nickName;
+public class LoginRequestDto {
+    private String userId;
     private String password;
-    private String avatarsId;
 }

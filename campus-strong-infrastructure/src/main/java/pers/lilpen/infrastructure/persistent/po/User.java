@@ -1,9 +1,10 @@
-package pers.lilpen.api.dto;
+package pers.lilpen.infrastructure.persistent.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pers.lilpen.domain.user.model.valobj.RoleTypeEnum;
 
 import java.util.List;
 
@@ -13,12 +14,13 @@ import java.util.List;
  **/
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDto {
+@NoArgsConstructor
+public class User {
     private String userId;
     private String username;
+    private String usernameSuffix;
     private String password;
-    private List<String> roles;
+    private List<RoleTypeEnum> roles;
     private String location;
 }

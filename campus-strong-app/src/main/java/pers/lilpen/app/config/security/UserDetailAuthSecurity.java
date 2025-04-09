@@ -3,6 +3,7 @@ package pers.lilpen.app.config.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pers.lilpen.domain.user.model.entity.UserEntity;
 
 import java.io.Serial;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public class UserDetailAuthSecurity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userEntity.getUserName();
+        return userEntity.getUserId();
     }
 
     @Override

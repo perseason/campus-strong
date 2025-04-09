@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterResponseDto {
+public class LoginResponseDto {
     private String userId;
+    private String username;
 }

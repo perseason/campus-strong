@@ -1,9 +1,10 @@
-package pers.lilpen.api.dto;
+package pers.lilpen.domain.user.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pers.lilpen.domain.user.model.valobj.RoleTypeEnum;
 
 import java.util.List;
 
@@ -15,10 +16,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDto {
+public class UserEntity {
+    private Long id;
     private String userId;
     private String username;
     private String password;
-    private List<String> roles;
+    private List<RoleTypeEnum> roles;
     private String location;
 }
